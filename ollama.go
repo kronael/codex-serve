@@ -46,14 +46,14 @@ func HandleOllamaTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return hardcoded Claude model as available
+	// Return hardcoded Codex model as available
 	resp := OllamaTagsResponse{
 		Models: []OllamaModel{
 			{
-				Name:       "claude",
+				Name:       "codex",
 				ModifiedAt: time.Now().Format(time.RFC3339),
 				Size:       0,
-				Digest:     "claude-sonnet",
+				Digest:     "codex-sonnet",
 			},
 		},
 	}

@@ -58,7 +58,7 @@ func HandleOpenAIModels(w http.ResponseWriter, r *http.Request) {
 		Object: "list",
 		Data: []OpenAIModel{
 			{
-				ID:      "claude",
+				ID:      "codex",
 				Object:  "model",
 				Created: time.Now().Unix(),
 				OwnedBy: "anthropic",
@@ -109,7 +109,7 @@ func HandleOpenAIChat(client *CodexClient) http.HandlerFunc {
 		completionID := fmt.Sprintf("chatcmpl-%s", uuid.New().String())
 		model := req.Model
 		if model == "" {
-			model = "claude"
+			model = "codex"
 		}
 
 		// Non-streaming response
