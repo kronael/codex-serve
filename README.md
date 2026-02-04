@@ -157,21 +157,69 @@ curl http://localhost:8080/v1/sessions
 
 ## Usage with AI Agents
 
-Use codex-serve as backend for OpenAI-compatible agents:
+### Option 1: Ollama API (Simplest)
+
+Many tools support Ollama out of the box:
 
 ```sh
 # Start codex-serve
 ./codex-serve &
 
-# Point your agent at it
+# Use with any Ollama-compatible tool
+export OLLAMA_HOST=http://localhost:8080
+
+# Example: if you have ollama CLI installed
+ollama run codex "what is 2+2?"
+
+# Or direct API call
+curl -X POST http://localhost:8080/api/chat \
+  -d '{"model":"codex","messages":[{"role":"user","content":"hello"}]}'
+```
+
+### Option 2: OpenAI API
+
+For tools that use OpenAI format:
+
+```sh
+# Start codex-serve
+./codex-serve &
+
+# Configure tool to use custom endpoint
 export OPENAI_BASE_URL=http://localhost:8080/v1
+export OPENAI_API_KEY="dummy"  # Required by some tools, not validated
 
-# Run pi agent with codex backend
-pi "refactor this module to use dependency injection"
-
-# Or any OpenAI-compatible tool
+# Example with aider
 aider --openai-api-base http://localhost:8080/v1
 ```
+
+### Option 3: Pi Agent (Custom Provider)
+
+Create `~/.pi/agent/models.json`:
+
+```json
+{
+  "providers": {
+    "codex-serve": {
+      "baseUrl": "http://localhost:8080/v1",
+      "api": "openai-completions",
+      "apiKey": "dummy",
+      "models": [
+        {
+          "id": "gpt-5.2-codex",
+          "name": "GPT-5.2 Codex (Local)",
+          "reasoning": true,
+          "contextWindow": 200000,
+          "maxTokens": 16000
+        }
+      ]
+    }
+  }
+}
+```
+
+Then run: `pi "your prompt here"`
+
+**Note**: Requires Node.js v20+ for pi agent.
 
 Swap backends without changing agent code.
 
