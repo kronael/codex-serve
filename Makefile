@@ -7,13 +7,13 @@ build:
 	go build -o ./$(BINARY_NAME) .
 
 test:
-	@echo "running unit tests..."
+	@echo "running unit tests (mocked)..."
 	go test -v -short -timeout 5s ./...
 
 smoke:
-	@echo "running smoke tests with real codex CLI..."
-	@echo "Note: requires codex CLI to be installed and authenticated"
-	go test -v -timeout 80s -run "Real|Smoke" ./...
+	@echo "running smoke tests (real codex CLI)..."
+	@echo "Note: requires codex CLI installed and authenticated"
+	go test -v -timeout 30s ./...
 
 lint:
 	@echo "linting..."
