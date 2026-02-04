@@ -11,8 +11,9 @@ test:
 	go test -v -short -timeout 5s ./...
 
 smoke:
-	@echo "running integration tests..."
-	go test -v -timeout 80s ./...
+	@echo "running smoke tests with real codex CLI..."
+	@echo "Note: requires codex CLI to be installed and authenticated"
+	go test -v -timeout 80s -run "Real|Smoke" ./...
 
 lint:
 	@echo "linting..."

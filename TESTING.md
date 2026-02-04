@@ -15,18 +15,25 @@ Or directly:
 go test -v -short -timeout 5s ./...
 ```
 
-### Integration Tests
+### Smoke Tests (Integration with Real Codex)
 
-Full test suite including slower tests (~80s):
+Smoke tests use the **real codex CLI** to verify the integration works correctly.
 
+Requirements:
+- codex CLI installed (`which codex`)
+- codex authenticated (`claude auth login`)
+
+Run smoke tests:
 ```sh
 make smoke
 ```
 
 Or directly:
 ```sh
-go test -v -timeout 80s ./...
+go test -v -timeout 80s -run "Real|Smoke" ./...
 ```
+
+These tests will skip if codex is not available.
 
 ### Specific Test
 
@@ -51,16 +58,27 @@ Unit tests are colocated with source files:
 
 Integration tests in `tests/` directory test full request flows.
 
-## Mocking codex CLI
+## Testing Strategy
 
-For testing without real codex CLI, tests use mock commands:
+### Unit Tests (Fast, Mocked)
+
+Unit tests use mock commands (like `echo`) instead of real codex:
 
 ```go
 // Use echo to return fake JSON responses
 client := NewCodexClient("echo", 5*time.Second)
 ```
 
-This allows testing the streaming parser and error handling without requiring codex installation.
+This allows fast testing (~<1s) without requiring codex installation.
+
+### Smoke Tests (Slower, Real)
+
+Smoke tests in `integration_test.go` use the **real codex CLI** to verify:
+- The mock data format matches real codex output
+- The actual integration works end-to-end
+- Parsing handles real codex responses correctly
+
+This is critical because unit tests alone can't catch format mismatches between mocked and real data.
 
 ## Test Coverage
 
