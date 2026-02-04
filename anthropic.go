@@ -11,15 +11,17 @@ import (
 
 // AnthropicHandler handles Anthropic Messages API requests
 type AnthropicHandler struct {
-	client  *CodexClient
-	metrics *MetricsCollector
+	client       *CodexClient
+	metrics      *MetricsCollector
+	defaultModel string
 }
 
 // NewAnthropicHandler creates a new Anthropic API handler
-func NewAnthropicHandler(client *CodexClient, metrics *MetricsCollector) *AnthropicHandler {
+func NewAnthropicHandler(client *CodexClient, metrics *MetricsCollector, cfg *Config) *AnthropicHandler {
 	return &AnthropicHandler{
-		client:  client,
-		metrics: metrics,
+		client:       client,
+		metrics:      metrics,
+		defaultModel: cfg.DefaultModel,
 	}
 }
 
@@ -193,7 +195,7 @@ func (h *AnthropicHandler) handleNonStream(w http.ResponseWriter, r *http.Reques
 	messageID := fmt.Sprintf("msg_%s", uuid.New().String())
 	model := req.Model
 	if model == "" {
-		model = "claude-3-5-sonnet-20241022"
+		model = h.defaultModel
 	}
 
 	prompt := h.buildPrompt(req.Messages)

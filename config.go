@@ -10,18 +10,20 @@ import (
 )
 
 type Config struct {
-	Address   string        `toml:"address"`
-	Path      string        `toml:"path"`
-	Timeout   time.Duration `toml:"timeout"`
-	JWTSecret string        `toml:"jwt_secret"`
+	Address      string        `toml:"address"`
+	Path         string        `toml:"path"`
+	Timeout      time.Duration `toml:"timeout"`
+	JWTSecret    string        `toml:"jwt_secret"`
+	DefaultModel string        `toml:"default_model"`
 }
 
 func LoadConfig(configPath string) (*Config, error) {
 	cfg := &Config{
-		Address:   "localhost:8080",
-		Path:      "codex",
-		Timeout:   30 * time.Second,
-		JWTSecret: "",
+		Address:      "localhost:8080",
+		Path:         "codex",
+		Timeout:      30 * time.Second,
+		JWTSecret:    "",
+		DefaultModel: "claude-3-5-sonnet-20241022",
 	}
 
 	if configPath != "" {
@@ -33,15 +35,25 @@ func LoadConfig(configPath string) (*Config, error) {
 			return nil, fmt.Errorf("failed to stat config: %w", err)
 		}
 	} else {
-		localPath := "./.claude-serve"
-		globalPath := filepath.Join(os.Getenv("HOME"), ".claude-serve", "config")
+		localPathCodex := "./.codex-serve"
+		localPathClaude := "./.claude-serve"
+		globalPathCodex := filepath.Join(os.Getenv("HOME"), ".codex-serve", "config")
+		globalPathClaude := filepath.Join(os.Getenv("HOME"), ".claude-serve", "config")
 
-		if _, err := os.Stat(localPath); err == nil {
-			if _, err := toml.DecodeFile(localPath, cfg); err != nil {
+		if _, err := os.Stat(localPathCodex); err == nil {
+			if _, err := toml.DecodeFile(localPathCodex, cfg); err != nil {
 				return nil, fmt.Errorf("failed to decode local config: %w", err)
 			}
-		} else if _, err := os.Stat(globalPath); err == nil {
-			if _, err := toml.DecodeFile(globalPath, cfg); err != nil {
+		} else if _, err := os.Stat(localPathClaude); err == nil {
+			if _, err := toml.DecodeFile(localPathClaude, cfg); err != nil {
+				return nil, fmt.Errorf("failed to decode local config: %w", err)
+			}
+		} else if _, err := os.Stat(globalPathCodex); err == nil {
+			if _, err := toml.DecodeFile(globalPathCodex, cfg); err != nil {
+				return nil, fmt.Errorf("failed to decode global config: %w", err)
+			}
+		} else if _, err := os.Stat(globalPathClaude); err == nil {
+			if _, err := toml.DecodeFile(globalPathClaude, cfg); err != nil {
 				return nil, fmt.Errorf("failed to decode global config: %w", err)
 			}
 		}
@@ -62,6 +74,9 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 	if secret := os.Getenv("CODEX_JWT_SECRET"); secret != "" {
 		cfg.JWTSecret = secret
+	}
+	if model := os.Getenv("CODEX_DEFAULT_MODEL"); model != "" {
+		cfg.DefaultModel = model
 	}
 
 	return cfg, nil

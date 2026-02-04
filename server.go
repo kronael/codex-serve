@@ -41,7 +41,7 @@ func NewServer(cfg *Config) (*Server, error) {
 	mux.HandleFunc("/v1/chat/completions", HandleOpenAIChat(codex))
 
 	// Anthropic-compatible API routes
-	anthropic := NewAnthropicHandler(codex, metrics)
+	anthropic := NewAnthropicHandler(codex, metrics, cfg)
 	mux.HandleFunc("/v1/messages", anthropic.HandleMessages)
 
 	// WebSocket session endpoint
@@ -95,7 +95,7 @@ func handleHealth(cfg *Config) http.HandlerFunc {
 
 		resp := map[string]string{
 			"status": "ok",
-			"claude": cfg.Path,
+			"codex":  "codex",
 		}
 
 		w.Header().Set("Content-Type", "application/json")
