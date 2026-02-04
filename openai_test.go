@@ -30,12 +30,12 @@ func TestHandleOpenAIModels(t *testing.T) {
 		t.Fatalf("failed to decode response: %v", err)
 	}
 
-	if len(resp.Data) == 0 {
-		t.Error("expected at least one model")
+	if len(resp.Data) != 4 {
+		t.Errorf("expected 4 models, got %d", len(resp.Data))
 	}
 
-	if resp.Data[0].ID != "codex" {
-		t.Errorf("expected model id codex, got %s", resp.Data[0].ID)
+	if resp.Data[0].ID != "gpt-5.2-codex" {
+		t.Errorf("expected model id gpt-5.2-codex, got %s", resp.Data[0].ID)
 	}
 }
 

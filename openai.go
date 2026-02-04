@@ -58,7 +58,25 @@ func HandleOpenAIModels(w http.ResponseWriter, r *http.Request) {
 		Object: "list",
 		Data: []OpenAIModel{
 			{
-				ID:      "codex",
+				ID:      "gpt-5.2-codex",
+				Object:  "model",
+				Created: time.Now().Unix(),
+				OwnedBy: "openai",
+			},
+			{
+				ID:      "gpt-5.2",
+				Object:  "model",
+				Created: time.Now().Unix(),
+				OwnedBy: "openai",
+			},
+			{
+				ID:      "gpt-5.1-codex-max",
+				Object:  "model",
+				Created: time.Now().Unix(),
+				OwnedBy: "openai",
+			},
+			{
+				ID:      "gpt-5.1-codex-mini",
 				Object:  "model",
 				Created: time.Now().Unix(),
 				OwnedBy: "openai",
