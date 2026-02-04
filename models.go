@@ -2,8 +2,36 @@ package main
 
 // Message represents a chat message with role and content
 type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Role    string      `json:"role"`
+	Content interface{} `json:"content"` // Can be string or []ContentPart
+}
+
+// ContentPart represents a content block (text, image, etc.)
+type ContentPart struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+// GetTextContent extracts text from either string or array content
+func (m *Message) GetTextContent() string {
+	switch v := m.Content.(type) {
+	case string:
+		return v
+	case []interface{}:
+		var text string
+		for _, part := range v {
+			if p, ok := part.(map[string]interface{}); ok {
+				if p["type"] == "text" {
+					if t, ok := p["text"].(string); ok {
+						text += t
+					}
+				}
+			}
+		}
+		return text
+	default:
+		return ""
+	}
 }
 
 // OllamaChatRequest represents Ollama's chat API request format

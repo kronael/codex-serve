@@ -275,7 +275,7 @@ func (h *AnthropicHandler) buildPrompt(messages []Message) string {
 		if i > 0 {
 			prompt += "\n\n"
 		}
-		prompt += fmt.Sprintf("%s: %s", msg.Role, msg.Content)
+		prompt += fmt.Sprintf("%s: %s", msg.Role, msg.GetTextContent())
 	}
 	return prompt
 }

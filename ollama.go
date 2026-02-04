@@ -337,12 +337,13 @@ func HandleOllamaGenerate(client *CodexClient) http.HandlerFunc {
 func formatMessages(messages []Message) string {
 	var result string
 	for _, msg := range messages {
+		content := msg.GetTextContent()
 		if msg.Role == "system" {
-			result += "System: " + msg.Content + "\n\n"
+			result += "System: " + content + "\n\n"
 		} else if msg.Role == "user" {
-			result += "User: " + msg.Content + "\n\n"
+			result += "User: " + content + "\n\n"
 		} else if msg.Role == "assistant" {
-			result += "Assistant: " + msg.Content + "\n\n"
+			result += "Assistant: " + content + "\n\n"
 		}
 	}
 	return result
