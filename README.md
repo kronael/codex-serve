@@ -188,8 +188,10 @@ For tools that use OpenAI format:
 export OPENAI_BASE_URL=http://localhost:8080/v1
 export OPENAI_API_KEY="dummy"  # Required by some tools, not validated
 
-# Example with aider
-aider --openai-api-base http://localhost:8080/v1
+# Direct API call
+curl -X POST http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-5.2-codex","messages":[{"role":"user","content":"hello"}]}'
 ```
 
 ### Option 3: Pi Agent (Custom Provider)
