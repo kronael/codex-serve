@@ -1,17 +1,17 @@
 # codex-serve
 
-HTTP server exposing Claude CLI via Ollama, OpenAI, and Anthropic
+HTTP server exposing codex via Ollama, OpenAI, and Anthropic
 compatible APIs.
 
 ## Requirements
 
 - Go 1.23+
-- [Claude CLI](https://docs.anthropic.com/en/docs/claude-code) installed
+- [codex CLI](https://docs.anthropic.com/en/docs/claude-code) installed
   and authenticated
 
 ## Quick Start
 
-First, authenticate with Claude CLI:
+First, authenticate with codex:
 
 ```sh
 claude auth login
@@ -68,7 +68,7 @@ jwt_secret = ""
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `CODEX_ADDRESS` | `localhost:8080` | Server bind address |
-| `CODEX_PATH` | `claude` | Path to Claude CLI |
+| `CODEX_PATH` | `claude` | Path to codex CLI |
 | `CODEX_TIMEOUT` | `30s` | Request timeout |
 | `CODEX_JWT_SECRET` | (empty) | JWT secret (empty = no auth) |
 
