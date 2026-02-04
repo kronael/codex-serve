@@ -25,7 +25,7 @@ type Usage struct {
 	OutputTokens int `json:"output_tokens"`
 }
 
-// Session represents a conversation session with Claude
+// Session represents a conversation session with Codex
 type Session struct {
 	ID        string       `json:"id"`
 	State     SessionState `json:"state"`
