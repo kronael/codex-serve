@@ -206,41 +206,44 @@ func HandleOpenAIChat(client *CodexClient) http.HandlerFunc {
 					Choices: []OpenAIStreamChoice{
 						{
 							Index:        0,
-							FinishReason: strPtr("error"),
+							FinishReason: strPtr("stop"),
 						},
 					},
 				}
 				data, _ := json.Marshal(errResp)
 				fmt.Fprintf(w, "data: %s\n\n", data)
+				fmt.Fprintf(w, "data: [DONE]\n\n")
 				flusher.Flush()
 				return
 			}
 
-			if chunk.Type == "text" {
-				var content string
-				json.Unmarshal(chunk.Content, &content)
+			if chunk.Type == "item.completed" && chunk.Item != nil {
+				var item ItemContent
+				if err := json.Unmarshal(chunk.Item, &item); err == nil && item.Type == "agent_message" {
+					content := item.Text
 
-				resp := OpenAIStreamResponse{
-					ID:      completionID,
-					Object:  "chat.completion.chunk",
-					Created: time.Now().Unix(),
-					Model:   model,
-					Choices: []OpenAIStreamChoice{
-						{
-							Index: 0,
-							Delta: struct {
-								Content string `json:"content,omitempty"`
-								Role    string `json:"role,omitempty"`
-							}{
-								Content: content,
+					resp := OpenAIStreamResponse{
+						ID:      completionID,
+						Object:  "chat.completion.chunk",
+						Created: time.Now().Unix(),
+						Model:   model,
+						Choices: []OpenAIStreamChoice{
+							{
+								Index: 0,
+								Delta: struct {
+									Content string `json:"content,omitempty"`
+									Role    string `json:"role,omitempty"`
+								}{
+									Content: content,
+								},
+								FinishReason: nil,
 							},
-							FinishReason: nil,
 						},
-					},
+					}
+					data, _ := json.Marshal(resp)
+					fmt.Fprintf(w, "data: %s\n\n", data)
+					flusher.Flush()
 				}
-				data, _ := json.Marshal(resp)
-				fmt.Fprintf(w, "data: %s\n\n", data)
-				flusher.Flush()
 			}
 		}
 
