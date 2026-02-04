@@ -63,7 +63,7 @@ address = "localhost:8080"
 path = "codex"
 timeout = "30s"
 jwt_secret = ""
-default_model = "claude-3-5-sonnet-20241022"
+default_model = "gpt-5.2-codex"
 ```
 
 ### Environment Variables
@@ -74,7 +74,7 @@ default_model = "claude-3-5-sonnet-20241022"
 | `CODEX_PATH` | `codex` | Path to codex CLI binary |
 | `CODEX_TIMEOUT` | `30s` | Request timeout |
 | `CODEX_JWT_SECRET` | (empty) | JWT secret (empty = no auth) |
-| `CODEX_DEFAULT_MODEL` | `claude-3-5-sonnet-20241022` | Default Claude model |
+| `CODEX_DEFAULT_MODEL` | `gpt-5.2-codex` | Default GPT model |
 
 ## Authentication
 
@@ -222,6 +222,16 @@ codex CLI outputs JSON-line format (`--json` flag):
 ```
 
 codex-serve transforms this into the appropriate API format (SSE/NDJSON).
+
+### Available models
+
+codex CLI supports OpenAI GPT models:
+- `gpt-5.2-codex` (default) - Latest frontier agentic coding model
+- `gpt-5.2` - Latest frontier model with improvements across knowledge, reasoning and coding
+- `gpt-5.1-codex-max` - Codex-optimized flagship for deep and fast reasoning
+- `gpt-5.1-codex-mini` - Optimized for codex. Cheaper, faster, but less capable
+
+Access legacy models via: `codex -m <model_name>`
 
 ## License
 

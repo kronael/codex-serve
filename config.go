@@ -23,7 +23,7 @@ func LoadConfig(configPath string) (*Config, error) {
 		Path:         "codex",
 		Timeout:      30 * time.Second,
 		JWTSecret:    "",
-		DefaultModel: "claude-3-5-sonnet-20241022",
+		DefaultModel: "gpt-5.2-codex",
 	}
 
 	if configPath != "" {

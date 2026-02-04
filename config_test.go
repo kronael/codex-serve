@@ -23,8 +23,8 @@ func TestLoadConfig_Defaults(t *testing.T) {
 	if cfg.Timeout != 30*time.Second {
 		t.Errorf("expected default timeout 30s, got %v", cfg.Timeout)
 	}
-	if cfg.DefaultModel != "claude-3-5-sonnet-20241022" {
-		t.Errorf("expected default model claude-3-5-sonnet-20241022, got %s", cfg.DefaultModel)
+	if cfg.DefaultModel != "gpt-5.2-codex" {
+		t.Errorf("expected default model gpt-5.2-codex, got %s", cfg.DefaultModel)
 	}
 }
 
@@ -34,7 +34,7 @@ func TestLoadConfig_EnvVars(t *testing.T) {
 	os.Setenv("CODEX_PATH", "/usr/bin/codex")
 	os.Setenv("CODEX_TIMEOUT", "60s")
 	os.Setenv("CODEX_JWT_SECRET", "test-secret")
-	os.Setenv("CODEX_DEFAULT_MODEL", "claude-opus-4-5-20251101")
+	os.Setenv("CODEX_DEFAULT_MODEL", "gpt-5.1-codex-max")
 	defer func() {
 		os.Unsetenv("CODEX_ADDRESS")
 		os.Unsetenv("CODEX_PATH")
@@ -60,8 +60,8 @@ func TestLoadConfig_EnvVars(t *testing.T) {
 	if cfg.JWTSecret != "test-secret" {
 		t.Errorf("expected jwt secret test-secret, got %s", cfg.JWTSecret)
 	}
-	if cfg.DefaultModel != "claude-opus-4-5-20251101" {
-		t.Errorf("expected model claude-opus-4-5-20251101, got %s", cfg.DefaultModel)
+	if cfg.DefaultModel != "gpt-5.1-codex-max" {
+		t.Errorf("expected model gpt-5.1-codex-max, got %s", cfg.DefaultModel)
 	}
 }
 
@@ -72,10 +72,10 @@ func TestLoadConfig_TOMLFile(t *testing.T) {
 
 	configContent := `
 address = "127.0.0.1:8888"
-path = "claude"
+path = "codex"
 timeout = "45s"
 jwt_secret = "file-secret"
-default_model = "claude-3-5-sonnet-20241022"
+default_model = "gpt-5.2-codex"
 `
 
 	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
@@ -90,8 +90,8 @@ default_model = "claude-3-5-sonnet-20241022"
 	if cfg.Address != "127.0.0.1:8888" {
 		t.Errorf("expected address 127.0.0.1:8888, got %s", cfg.Address)
 	}
-	if cfg.Path != "claude" {
-		t.Errorf("expected path claude, got %s", cfg.Path)
+	if cfg.Path != "codex" {
+		t.Errorf("expected path codex, got %s", cfg.Path)
 	}
 	if cfg.Timeout != 45*time.Second {
 		t.Errorf("expected timeout 45s, got %v", cfg.Timeout)
@@ -108,8 +108,8 @@ func TestLoadConfig_Precedence(t *testing.T) {
 
 	configContent := `
 address = "127.0.0.1:8888"
-path = "claude"
-default_model = "claude-3-5-sonnet-20241022"
+path = "codex"
+default_model = "gpt-5.2-codex"
 `
 
 	if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
@@ -117,7 +117,7 @@ default_model = "claude-3-5-sonnet-20241022"
 	}
 
 	os.Setenv("CODEX_ADDRESS", "0.0.0.0:7777")
-	os.Setenv("CODEX_DEFAULT_MODEL", "claude-opus-4-5-20251101")
+	os.Setenv("CODEX_DEFAULT_MODEL", "gpt-5.2")
 	defer func() {
 		os.Unsetenv("CODEX_ADDRESS")
 		os.Unsetenv("CODEX_DEFAULT_MODEL")
@@ -131,10 +131,10 @@ default_model = "claude-3-5-sonnet-20241022"
 	if cfg.Address != "0.0.0.0:7777" {
 		t.Errorf("expected env var to override, got %s", cfg.Address)
 	}
-	if cfg.Path != "claude" {
+	if cfg.Path != "codex" {
 		t.Errorf("expected path from file, got %s", cfg.Path)
 	}
-	if cfg.DefaultModel != "claude-opus-4-5-20251101" {
+	if cfg.DefaultModel != "gpt-5.2" {
 		t.Errorf("expected env var to override model, got %s", cfg.DefaultModel)
 	}
 }

@@ -11,20 +11,20 @@ import (
 // Test Anthropic handler with default model
 func TestAnthropicHandler_DefaultModel(t *testing.T) {
 	cfg := &Config{
-		DefaultModel: "claude-opus-4-5-20251101",
+		DefaultModel: "gpt-5.2-codex",
 	}
 	client := NewCodexClient("echo", 0)
 	metrics := NewMetricsCollector()
 	handler := NewAnthropicHandler(client, metrics, cfg)
 
-	if handler.defaultModel != "claude-opus-4-5-20251101" {
-		t.Errorf("expected default model claude-opus-4-5-20251101, got %s", handler.defaultModel)
+	if handler.defaultModel != "gpt-5.2-codex" {
+		t.Errorf("expected default model gpt-5.2-codex, got %s", handler.defaultModel)
 	}
 }
 
 // Test Anthropic messages endpoint with invalid method
 func TestHandleMessages_InvalidMethod(t *testing.T) {
-	cfg := &Config{DefaultModel: "claude-3-5-sonnet-20241022"}
+	cfg := &Config{DefaultModel: "gpt-5.2-codex"}
 	client := NewCodexClient("echo", 0)
 	metrics := NewMetricsCollector()
 	handler := NewAnthropicHandler(client, metrics, cfg)
@@ -41,7 +41,7 @@ func TestHandleMessages_InvalidMethod(t *testing.T) {
 
 // Test Anthropic messages endpoint with empty messages
 func TestHandleMessages_EmptyMessages(t *testing.T) {
-	cfg := &Config{DefaultModel: "claude-3-5-sonnet-20241022"}
+	cfg := &Config{DefaultModel: "gpt-5.2-codex"}
 	client := NewCodexClient("echo", 0)
 	metrics := NewMetricsCollector()
 	handler := NewAnthropicHandler(client, metrics, cfg)
@@ -64,7 +64,7 @@ func TestHandleMessages_EmptyMessages(t *testing.T) {
 
 // Test Anthropic messages endpoint with invalid JSON
 func TestHandleMessages_InvalidJSON(t *testing.T) {
-	cfg := &Config{DefaultModel: "claude-3-5-sonnet-20241022"}
+	cfg := &Config{DefaultModel: "gpt-5.2-codex"}
 	client := NewCodexClient("echo", 0)
 	metrics := NewMetricsCollector()
 	handler := NewAnthropicHandler(client, metrics, cfg)
@@ -81,7 +81,7 @@ func TestHandleMessages_InvalidJSON(t *testing.T) {
 
 // Test build prompt function
 func TestBuildPrompt(t *testing.T) {
-	cfg := &Config{DefaultModel: "claude-3-5-sonnet-20241022"}
+	cfg := &Config{DefaultModel: "gpt-5.2-codex"}
 	client := NewCodexClient("echo", 0)
 	metrics := NewMetricsCollector()
 	handler := NewAnthropicHandler(client, metrics, cfg)
