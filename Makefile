@@ -1,12 +1,10 @@
 .PHONY: build test smoke lint clean run
 
 BINARY_NAME=codex-serve
-BUILD_DIR=./dist
 
 build:
 	@echo "building..."
-	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) .
+	go build -o ./$(BINARY_NAME) .
 
 test:
 	@echo "running unit tests..."
@@ -28,11 +26,11 @@ lint:
 
 run: build
 	@echo "starting server..."
-	$(BUILD_DIR)/$(BINARY_NAME)
+	./$(BINARY_NAME)
 
 clean:
 	@echo "cleaning..."
-	@rm -rf $(BUILD_DIR)
+	@rm -f ./$(BINARY_NAME)
 	@rm -rf ./tmp
 	@rm -rf ./log
 	go clean

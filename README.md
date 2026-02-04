@@ -1,19 +1,27 @@
 # codex-serve
 
-HTTP server exposing Claude Code CLI via Ollama, OpenAI, and Anthropic
+HTTP server exposing Claude CLI via Ollama, OpenAI, and Anthropic
 compatible APIs.
 
 ## Requirements
 
 - Go 1.23+
-- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed
+- [Claude CLI](https://docs.anthropic.com/en/docs/claude-code) installed
   and authenticated
 
 ## Quick Start
 
+First, authenticate with Claude CLI:
+
+```sh
+claude auth login
+```
+
+Then build and run codex-serve:
+
 ```sh
 make build
-./dist/codex-serve
+./codex-serve
 ```
 
 Server runs at http://localhost:8080
@@ -67,8 +75,8 @@ jwt_secret = ""
 ## Authentication
 
 ```sh
-./dist/codex-serve -jwt secret           # Generate secret
-./dist/codex-serve -jwt token <secret>   # Generate token
+./codex-serve -jwt secret           # Generate secret
+./codex-serve -jwt token <secret>   # Generate token
 ```
 
 When `CODEX_JWT_SECRET` is set:
@@ -149,12 +157,12 @@ Use codex-serve as backend for OpenAI-compatible agents:
 
 ```sh
 # Start codex-serve
-./dist/codex-serve &
+./codex-serve &
 
 # Point your agent at it
 export OPENAI_BASE_URL=http://localhost:8080/v1
 
-# Run pi agent with Claude Code backend
+# Run pi agent with codex backend
 pi "refactor this module to use dependency injection"
 
 # Or any OpenAI-compatible tool
