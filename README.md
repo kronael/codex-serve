@@ -31,7 +31,7 @@ Test:
 curl http://localhost:8080/health
 curl -X POST http://localhost:8080/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"model":"claude","messages":[{"role":"user","content":"hello"}]}'
+  -d '{"model":"codex","messages":[{"role":"user","content":"hello"}]}'
 ```
 
 ## Development
@@ -51,16 +51,19 @@ TOML config file or environment variables.
 
 Config precedence (higher overrides lower):
 1. Environment variables
-2. `./.claude-serve` (local)
-3. `~/.claude-serve/config` (global)
+2. `./.codex-serve` (local)
+3. `./.claude-serve` (local, fallback for backwards compatibility)
+4. `~/.codex-serve/config` (global)
+5. `~/.claude-serve/config` (global, fallback)
 
 ### Config File
 
 ```toml
 address = "localhost:8080"
-path = "claude"
+path = "codex"
 timeout = "30s"
 jwt_secret = ""
+default_model = "claude-3-5-sonnet-20241022"
 ```
 
 ### Environment Variables
@@ -68,9 +71,10 @@ jwt_secret = ""
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `CODEX_ADDRESS` | `localhost:8080` | Server bind address |
-| `CODEX_PATH` | `claude` | Path to codex CLI |
+| `CODEX_PATH` | `codex` | Path to codex CLI binary |
 | `CODEX_TIMEOUT` | `30s` | Request timeout |
 | `CODEX_JWT_SECRET` | (empty) | JWT secret (empty = no auth) |
+| `CODEX_DEFAULT_MODEL` | `claude-3-5-sonnet-20241022` | Default Claude model |
 
 ## Authentication
 
@@ -88,7 +92,7 @@ When `CODEX_JWT_SECRET` is set:
 
 ```sh
 curl http://localhost:8080/health
-# {"status":"ok","claude":"claude"}
+# {"status":"ok","codex":"codex"}
 ```
 
 ### Metrics
@@ -106,12 +110,12 @@ curl http://localhost:8080/api/tags
 # Chat (streaming NDJSON)
 curl -X POST http://localhost:8080/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"model":"claude","messages":[{"role":"user","content":"hello"}],"stream":true}'
+  -d '{"model":"codex","messages":[{"role":"user","content":"hello"}],"stream":true}'
 
 # Generate
 curl -X POST http://localhost:8080/api/generate \
   -H "Content-Type: application/json" \
-  -d '{"model":"claude","prompt":"hello","stream":true}'
+  -d '{"model":"codex","prompt":"hello","stream":true}'
 ```
 
 ### OpenAI API (`/v1/*`)
@@ -123,7 +127,7 @@ curl http://localhost:8080/v1/models
 # Chat completions (streaming SSE)
 curl -X POST http://localhost:8080/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -d '{"model":"claude","messages":[{"role":"user","content":"hello"}],"stream":true}'
+  -d '{"model":"codex","messages":[{"role":"user","content":"hello"}],"stream":true}'
 ```
 
 ### Anthropic API (`/v1/messages`)
@@ -131,7 +135,7 @@ curl -X POST http://localhost:8080/v1/chat/completions \
 ```sh
 curl -X POST http://localhost:8080/v1/messages \
   -H "Content-Type: application/json" \
-  -d '{"model":"claude","messages":[{"role":"user","content":"hello"}],"max_tokens":1024,"stream":true}'
+  -d '{"model":"codex","messages":[{"role":"user","content":"hello"}],"max_tokens":1024,"stream":true}'
 ```
 
 ### WebSocket Sessions (`/ws/session`)
@@ -170,6 +174,54 @@ aider --openai-api-base http://localhost:8080/v1
 ```
 
 Swap backends without changing agent code.
+
+## Troubleshooting
+
+### codex CLI not found
+
+If you get "exec: codex: executable file not found", the codex CLI is not in your PATH.
+
+Options:
+1. Install codex CLI globally (recommended)
+2. Set `CODEX_PATH` to the full path: `export CODEX_PATH=/path/to/codex`
+3. Set `path = "/path/to/codex"` in config file
+
+Check codex is installed:
+```sh
+codex --version
+```
+
+### Authentication errors
+
+codex-serve requires the codex CLI to be authenticated:
+
+```sh
+claude auth login
+```
+
+After authentication, verify with:
+```sh
+codex exec "what is 2+2?"
+```
+
+### Config file not found
+
+Config files are optional. If not found, codex-serve uses defaults.
+
+To verify config is loaded, check startup logs or test with:
+```sh
+CODEX_ADDRESS=127.0.0.1:9999 ./codex-serve
+```
+
+### Streaming output format
+
+codex CLI outputs JSON-line format (`--json` flag):
+```json
+{"type":"content","content":{"text":"Hello"}}
+{"type":"done"}
+```
+
+codex-serve transforms this into the appropriate API format (SSE/NDJSON).
 
 ## License
 
