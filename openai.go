@@ -61,7 +61,7 @@ func HandleOpenAIModels(w http.ResponseWriter, r *http.Request) {
 				ID:      "codex",
 				Object:  "model",
 				Created: time.Now().Unix(),
-				OwnedBy: "anthropic",
+				OwnedBy: "openai",
 			},
 		},
 	}
