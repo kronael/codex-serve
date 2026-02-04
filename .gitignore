@@ -1,0 +1,28 @@
+# Build artifacts
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+coverage.out
+*.coverprofile
+
+# Dependency directories
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Project specific
+.claude/
+.demiurg/
+tmp/
+log/
+*.log
