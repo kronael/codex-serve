@@ -19,7 +19,7 @@ type Config struct {
 func LoadConfig(configPath string) (*Config, error) {
 	cfg := &Config{
 		Address:   "localhost:8080",
-		Path:      "claude",
+		Path:      "codex",
 		Timeout:   30 * time.Second,
 		JWTSecret: "",
 	}

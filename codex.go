@@ -39,12 +39,7 @@ func (c *CodexClient) Run(ctx context.Context, prompt string) (<-chan StreamResp
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	cmd := exec.CommandContext(ctx, c.path, "exec", "--quiet", "--output-format", "json")
-
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create stdin pipe: %w", err)
-	}
+	cmd := exec.CommandContext(ctx, c.path, "--print", prompt, "--output-format", "stream-json", "--no-session-persistence")
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -54,12 +49,6 @@ func (c *CodexClient) Run(ctx context.Context, prompt string) (<-chan StreamResp
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("failed to start codex: %w", err)
 	}
-
-	// Write prompt to stdin
-	go func() {
-		defer stdin.Close()
-		fmt.Fprintln(stdin, prompt)
-	}()
 
 	// Setup streaming channel
 	ch := make(chan StreamResponse, 10)
