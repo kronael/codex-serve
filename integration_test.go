@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -151,6 +152,47 @@ func TestOllamaChat_RealCodex(t *testing.T) {
 	} else {
 		t.Logf("Got response: %s", resp.Message.Content)
 	}
+}
+
+// Test OpenAI streaming with real codex
+func TestOpenAIChat_Streaming_RealCodex(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode")
+	}
+
+	codexPath := os.Getenv("CODEX_PATH")
+	if codexPath == "" {
+		codexPath = "codex"
+	}
+
+	client := NewCodexClient(codexPath, 30*time.Second)
+	handler := HandleOpenAIChat(client)
+
+	reqBody := OpenAIChatRequest{
+		Model: "gpt-5.2-codex",
+		Messages: []Message{
+			{Role: "user", Content: "say 'test' in 2 words"},
+		},
+		Stream: true,
+	}
+
+	body, _ := json.Marshal(reqBody)
+	req := httptest.NewRequest(http.MethodPost, "/v1/chat/completions", bytes.NewReader(body))
+	w := httptest.NewRecorder()
+
+	handler(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Logf("Response body: %s", w.Body.String())
+		t.Skipf("codex CLI not available or failed: status %d", w.Code)
+	}
+
+	// Check for SSE format
+	if !strings.Contains(w.Body.String(), "data:") {
+		t.Error("expected SSE format with 'data:' prefix")
+	}
+
+	t.Logf("Streaming response received: %d bytes", w.Body.Len())
 }
 
 // Test that verifies our mock data matches real codex format
