@@ -124,10 +124,13 @@ func HandleOpenAIChat(client *CodexClient) http.HandlerFunc {
 					})
 					return
 				}
-				if chunk.Type == "text" {
-					var content string
-					json.Unmarshal(chunk.Content, &content)
-					fullResponse += content
+				if chunk.Type == "item.completed" && chunk.Item != nil {
+					var item ItemContent
+					if err := json.Unmarshal(chunk.Item, &item); err == nil {
+						if item.Type == "agent_message" {
+							fullResponse += item.Text
+						}
+					}
 				}
 			}
 

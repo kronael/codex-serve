@@ -143,20 +143,20 @@ func (h *AnthropicHandler) handleStream(w http.ResponseWriter, r *http.Request, 
 			return
 		}
 
-		if chunk.Type == "content" {
-			var content struct {
-				Text string `json:"text"`
-			}
-			if err := json.Unmarshal(chunk.Content, &content); err == nil {
-				textBuffer += content.Text
-				h.writeSSE(w, flusher, "content_block_delta", map[string]interface{}{
-					"type":  "content_block_delta",
-					"index": 0,
-					"delta": map[string]string{
-						"type": "text_delta",
-						"text": content.Text,
-					},
-				})
+		if chunk.Type == "item.completed" && chunk.Item != nil {
+			var item ItemContent
+			if err := json.Unmarshal(chunk.Item, &item); err == nil {
+				if item.Type == "agent_message" {
+					textBuffer += item.Text
+					h.writeSSE(w, flusher, "content_block_delta", map[string]interface{}{
+						"type":  "content_block_delta",
+						"index": 0,
+						"delta": map[string]string{
+							"type": "text_delta",
+							"text": item.Text,
+						},
+					})
+				}
 			}
 		}
 	}
@@ -221,12 +221,12 @@ func (h *AnthropicHandler) handleNonStream(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		if chunk.Type == "content" {
-			var content struct {
-				Text string `json:"text"`
-			}
-			if err := json.Unmarshal(chunk.Content, &content); err == nil {
-				textBuffer += content.Text
+		if chunk.Type == "item.completed" && chunk.Item != nil {
+			var item ItemContent
+			if err := json.Unmarshal(chunk.Item, &item); err == nil {
+				if item.Type == "agent_message" {
+					textBuffer += item.Text
+				}
 			}
 		}
 	}

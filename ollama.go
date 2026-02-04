@@ -114,11 +114,14 @@ func HandleOllamaChat(client *CodexClient) http.HandlerFunc {
 					})
 					return
 				}
-				// Accumulate text content
-				if chunk.Type == "text" {
-					var content string
-					json.Unmarshal(chunk.Content, &content)
-					fullResponse += content
+				// Extract text from item.completed events
+				if chunk.Type == "item.completed" && chunk.Item != nil {
+					var item ItemContent
+					if err := json.Unmarshal(chunk.Item, &item); err == nil {
+						if item.Type == "agent_message" {
+							fullResponse += item.Text
+						}
+					}
 				}
 			}
 
@@ -251,11 +254,14 @@ func HandleOllamaGenerate(client *CodexClient) http.HandlerFunc {
 					})
 					return
 				}
-				// Accumulate text content
-				if chunk.Type == "text" {
-					var content string
-					json.Unmarshal(chunk.Content, &content)
-					fullResponse += content
+				// Extract text from item.completed events
+				if chunk.Type == "item.completed" && chunk.Item != nil {
+					var item ItemContent
+					if err := json.Unmarshal(chunk.Item, &item); err == nil {
+						if item.Type == "agent_message" {
+							fullResponse += item.Text
+						}
+					}
 				}
 			}
 

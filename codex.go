@@ -30,8 +30,15 @@ func NewCodexClient(path string, timeout time.Duration) *CodexClient {
 // StreamResponse represents a single streaming response chunk
 type StreamResponse struct {
 	Type    string          `json:"type"`
+	Item    json.RawMessage `json:"item,omitempty"`
 	Content json.RawMessage `json:"content,omitempty"`
 	Error   string          `json:"error,omitempty"`
+}
+
+// ItemContent represents the item content from codex
+type ItemContent struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
 }
 
 // Run executes codex with the given prompt and streams responses
@@ -39,7 +46,7 @@ func (c *CodexClient) Run(ctx context.Context, prompt string) (<-chan StreamResp
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	cmd := exec.CommandContext(ctx, c.path, "--print", prompt, "--output-format", "stream-json", "--no-session-persistence")
+	cmd := exec.CommandContext(ctx, c.path, "exec", "--json", prompt)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
