@@ -102,7 +102,6 @@ func HandleOpenAIChat(client *CodexClient) http.HandlerFunc {
 
 		var req OpenAIChatRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			fmt.Printf("[ERROR] Failed to decode OpenAI request: %v\n", err)
 			WriteError(w, &APIError{
 				Code:    ErrInvalidRequest,
 				Message: fmt.Sprintf("invalid request body: %v", err),
@@ -110,8 +109,6 @@ func HandleOpenAIChat(client *CodexClient) http.HandlerFunc {
 			})
 			return
 		}
-
-		fmt.Printf("[DEBUG] OpenAI chat: model=%s, msgs=%d, stream=%v\n", req.Model, len(req.Messages), req.Stream)
 
 		prompt := formatMessages(req.Messages)
 		ctx, cancel := context.WithTimeout(r.Context(), client.timeout)
